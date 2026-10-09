@@ -1,0 +1,15 @@
+.gradle/
+.idea/
+local.properties
+**/build/
+*.iml
+.signing/
+signing.properties
+PROGRESS.md
+DELIVERED.json
+*.apk
+*.jks
+*.keystore
+*.pem
+*.p12
+*.log

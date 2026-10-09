@@ -1,0 +1,36 @@
+plugins { id 'com.android.application' }
+def releaseKeys = new Properties()
+def releaseKeysFile = rootProject.file('signing.properties')
+if (releaseKeysFile.exists()) releaseKeysFile.withInputStream { releaseKeys.load(it) }
+android {
+    namespace 'top.rongshangs.watchface'
+    compileSdk 35
+    defaultConfig { applicationId 'top.rongshangs.watchface'; minSdk 28; targetSdk 35; versionCode 2; versionName '1.1.0' }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+    signingConfigs {
+        if (!releaseKeys.isEmpty()) {
+            production {
+                storeFile rootProject.file(releaseKeys['storeFile'])
+                storePassword releaseKeys['storePassword']
+                keyAlias releaseKeys['keyAlias']
+                keyPassword releaseKeys['keyPassword']
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            if (!releaseKeys.isEmpty()) signingConfig signingConfigs.production
+        }
+    }
+    testOptions {
+        unitTests.includeAndroidResources = true
+        unitTests.all {
+            systemProperty 'robolectric.dependency.repo.url', 'https://maven.aliyun.com/repository/central'
+            systemProperty 'verification.dir', rootProject.layout.buildDirectory.dir('verification').get().asFile.absolutePath
+        }
+    }
+}
+dependencies { testImplementation 'junit:junit:4.13.2'; testImplementation 'org.robolectric:robolectric:4.16.1' }
